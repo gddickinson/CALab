@@ -21,7 +21,8 @@
 - **Menu System**: Full file/edit/view/tools/help menus
 
 ### Automata Included
-- **Langton's Loop**: Properly implemented with actual rule table
+- **Von Neumann Universal Constructor**: 29 states and rule table
+- **Langton's Loop**: Implemented with rule table
 - **Game of Life**: Gosper's Glider Gun
 - **Wire World**: Signal propagation
 - **Brian's Brain**: Wave patterns
@@ -38,7 +39,7 @@ CALab/
 │
 ├── plugins/                 # Automaton plugins
 │   ├── __init__.py
-│   ├── langton_loop.py      # Proper Langton Loop
+│   ├── langton_loop.py
 │   ├── wireworld.py
 │   └── game_of_life.py
 │
@@ -120,11 +121,11 @@ class MyAutomatonPlugin(PluginInterface):
             num_states=3,
             neighborhood_type=NeighborhoodType.MOORE
         )
-    
+
     @staticmethod
     def create_automaton(width, height, **kwargs):
         return MyAutomaton(width, height)
-    
+
     @staticmethod
     def get_default_patterns():
         return {"random": {"density": 0.3}}
@@ -201,7 +202,7 @@ diagnostics.export_report("diagnostic_report.json")
 
 Send this report for analysis!
 
-## 🧪 Actual Working Implementations
+## 🧪 Working Implementations
 
 ### Langton's Loop
 The implementation includes:
@@ -209,17 +210,6 @@ The implementation includes:
 - von Neumann neighborhood
 - State machine for replication
 - Correct initialization pattern
-
-### Why Previous Versions Didn't Work
-1. **Original simplified version**: Too generic, didn't implement actual state transitions
-2. **Missing rule tables**: Self-replication requires precise rules
-3. **Incorrect neighborhoods**: Must use von Neumann (4-connected)
-
-### What's Fixed
-1. **Langton Loop**: Actual rule table implementation
-2. **Rule Engine**: Proper pattern matching
-3. **Simulator**: Thread-safe execution
-4. **GUI**: Proper event-driven updates
 
 ## 🔬 For Researchers
 
@@ -354,7 +344,6 @@ MIT License - Feel free to use and modify
 - John von Neumann: Original self-replicating automata concept
 - Chris Langton: Simplified self-replicating loops
 - Conway: Game of Life
-- George Dickinson: Project development and FLIKA integration concepts
 
 ## 📧 Contact
 
@@ -362,4 +351,3 @@ For bugs, feature requests, or questions, please export a diagnostic report and 
 
 ---
 
-**Built for researchers, by researchers** 🔬
