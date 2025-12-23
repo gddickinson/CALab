@@ -159,8 +159,7 @@ class DocumentationTab(QWidget):
                 ('▶️ Simulation Tab', 'gui_guide/simulation_tab.md'),
                 ('📝 Rule Editor', 'gui_guide/rule_editor.md'),
                 ('🎨 Pattern Editor', 'gui_guide/pattern_editor.md'),
-                ('📊 Diagnostics', 'gui_guide/diagnostics.md'),
-                ('🎵 Sonification', 'gui_guide/sonification_tab.md')
+                ('📊 Diagnostics', 'gui_guide/diagnostics.md')
             ],
             'Tutorials': [
                 ('✏️ Creating Rules', 'tutorials/creating_rules.md'),

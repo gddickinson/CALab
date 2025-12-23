@@ -5,7 +5,7 @@ Main simulation viewer with live visualization and controls
 
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
                              QLabel, QSlider, QComboBox, QSpinBox, QGroupBox,
-                             QTextEdit, QGridLayout, QSplitter, QMessageBox)
+                             QTextEdit, QGridLayout, QSplitter)
 from PyQt5.QtCore import Qt, pyqtSignal, QTimer
 from PyQt5.QtGui import QFont
 
@@ -28,12 +28,11 @@ class SimulationTab(QWidget):
     error_occurred = pyqtSignal(str, str)  # (error_type, message)
     status_update = pyqtSignal(str)  # status message
     
-    def __init__(self, simulator, diagnostics, main_window=None):
+    def __init__(self, simulator, diagnostics):
         super().__init__()
         
         self.simulator = simulator
         self.diagnostics = diagnostics
-        self.main_window = main_window
         self.current_automaton = None
         self.current_plugin = None
         self._updating = False  # Prevent recursive updates
@@ -76,11 +75,6 @@ class SimulationTab(QWidget):
         # Automaton selection
         selection_group = self._create_selection_group()
         right_layout.addWidget(selection_group)
-        
-        # Integration controls
-        if self.main_window:
-            integration_group = self._create_integration_group()
-            right_layout.addWidget(integration_group)
         
         # Playback controls
         playback_group = self._create_playback_group()
@@ -133,54 +127,6 @@ class SimulationTab(QWidget):
         self.new_button = QPushButton("🆕 Create New")
         self.new_button.clicked.connect(self.new_simulation)
         layout.addWidget(self.new_button)
-        
-        group.setLayout(layout)
-        return group
-    
-    def _create_integration_group(self):
-        """Create integration controls for other tabs"""
-        group = QGroupBox("🔗 Quick Integration")
-        layout = QVBoxLayout()
-        
-        # Custom pattern
-        pattern_layout = QHBoxLayout()
-        use_custom_pattern_btn = QPushButton("📐 Use Custom Pattern")
-        use_custom_pattern_btn.setToolTip("Use pattern from Pattern Editor")
-        use_custom_pattern_btn.clicked.connect(self._use_custom_pattern)
-        pattern_layout.addWidget(use_custom_pattern_btn)
-        
-        edit_pattern_btn = QPushButton("✏️")
-        edit_pattern_btn.setToolTip("Open Pattern Editor")
-        edit_pattern_btn.setMaximumWidth(40)
-        edit_pattern_btn.clicked.connect(lambda: self.main_window.switch_to_pattern_editor())
-        pattern_layout.addWidget(edit_pattern_btn)
-        layout.addLayout(pattern_layout)
-        
-        # Custom rules (future)
-        rule_layout = QHBoxLayout()
-        use_custom_rule_btn = QPushButton("📝 Use Custom Rule")
-        use_custom_rule_btn.setToolTip("Use rules from Rule Editor (Coming soon)")
-        use_custom_rule_btn.setEnabled(False)  # TODO: Implement
-        use_custom_rule_btn.clicked.connect(self._use_custom_rules)
-        rule_layout.addWidget(use_custom_rule_btn)
-        
-        edit_rule_btn = QPushButton("✏️")
-        edit_rule_btn.setToolTip("Open Rule Editor")
-        edit_rule_btn.setMaximumWidth(40)
-        edit_rule_btn.clicked.connect(lambda: self.main_window.switch_to_rule_editor())
-        rule_layout.addWidget(edit_rule_btn)
-        layout.addLayout(rule_layout)
-        
-        # Quick actions
-        layout.addWidget(QLabel("Quick Access:", styleSheet="font-weight: bold;"))
-        
-        diagnostics_btn = QPushButton("📊 View Diagnostics")
-        diagnostics_btn.clicked.connect(lambda: self.main_window.switch_to_diagnostics())
-        layout.addWidget(diagnostics_btn)
-        
-        sonify_btn = QPushButton("🎵 Sonify Pattern")
-        sonify_btn.clicked.connect(lambda: self.main_window.switch_to_sonification())
-        layout.addWidget(sonify_btn)
         
         group.setLayout(layout)
         return group
@@ -445,67 +391,3 @@ State Distribution:
         if self.simulator.running:
             self.simulator.stop()
         event.accept()
-    
-    def _use_custom_pattern(self):
-        """Use pattern from Pattern Editor"""
-        if not self.main_window:
-            return
-        
-        try:
-            # Get pattern grid from Pattern Editor
-            custom_grid = self.main_window.get_current_pattern_grid()
-            
-            # Stop current simulation
-            if self.simulator.running:
-                self.simulator.stop()
-                self.play_button.setText("▶ Play")
-            
-            # Get current selections
-            plugin_name = self.plugin_combo.currentData()
-            if not plugin_name:
-                QMessageBox.warning(self, "Warning", "Please select an automaton type first")
-                return
-            
-            # Create automaton with custom pattern
-            plugin = PLUGIN_REGISTRY[plugin_name]
-            self.current_plugin = plugin
-            
-            # Get grid size from custom pattern
-            h, w = custom_grid.shape
-            
-            # Create automaton
-            self.current_automaton = plugin.create_automaton(w, h, pattern='empty')
-            
-            # Set custom pattern
-            self.current_automaton.grid = custom_grid
-            self.current_automaton.generation = 0
-            
-            self.simulator.set_automaton(self.current_automaton)
-            
-            # Reset visualization
-            self.im = None
-            self._update_display()
-            
-            metadata = plugin.get_metadata()
-            self.status_update.emit(f"Loaded custom pattern into {metadata.name}")
-            
-            QMessageBox.information(
-                self, "Success", 
-                f"Custom pattern loaded!\nGrid size: {w}×{h}\nClick Play to run simulation."
-            )
-            
-        except Exception as e:
-            QMessageBox.critical(self, "Error", f"Failed to load custom pattern: {e}")
-            import traceback
-            traceback.print_exc()
-    
-    def _use_custom_rules(self):
-        """Use rules from Rule Editor (TODO)"""
-        QMessageBox.information(
-            self, "Coming Soon",
-            "Custom rule integration will be implemented soon!\n\n"
-            "For now, you can:\n"
-            "1. Create rules in Rule Editor\n"
-            "2. Export them as JSON\n"
-            "3. Load them in future plugin implementations"
-        )

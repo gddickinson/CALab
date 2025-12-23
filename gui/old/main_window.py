@@ -11,11 +11,13 @@ from PyQt5.QtGui import QIcon
 import sys
 import os
 
-# Import tabs (to be created)
+# Import tabs
 from gui.simulation_tab import SimulationTab
 from gui.rule_editor_tab import RuleEditorTab
 from gui.pattern_editor_tab import PatternEditorTab
 from gui.diagnostics_tab import DiagnosticsTab
+from gui.sonification_tab import SonificationTab
+from gui.documentation_tab import DocumentationTab
 from gui.error_console import ErrorConsole
 
 from core.simulator import SimulationEngine
@@ -78,11 +80,15 @@ class CALabMainWindow(QMainWindow):
         self.rule_editor_tab = RuleEditorTab()
         self.pattern_editor_tab = PatternEditorTab()
         self.diagnostics_tab = DiagnosticsTab(self.diagnostics)
+        self.sonification_tab = SonificationTab(self.simulator)
+        self.documentation_tab = DocumentationTab()
         
         self.tab_widget.addTab(self.simulation_tab, "Simulation")
         self.tab_widget.addTab(self.rule_editor_tab, "Rule Editor")
         self.tab_widget.addTab(self.pattern_editor_tab, "Pattern Editor")
         self.tab_widget.addTab(self.diagnostics_tab, "Diagnostics")
+        self.tab_widget.addTab(self.sonification_tab, "🎵 Sonification")
+        self.tab_widget.addTab(self.documentation_tab, "📚 Documentation")
         
         # Error console (dockable)
         self.error_console = ErrorConsole()
@@ -181,6 +187,14 @@ class CALabMainWindow(QMainWindow):
         # Connect tab signals
         self.simulation_tab.error_occurred.connect(self._handle_error)
         self.simulation_tab.status_update.connect(self._update_status_message)
+        
+        # Track current automaton
+        self.simulator.on_step_callback = self._update_current_automaton
+        
+    def _update_current_automaton(self, automaton):
+        """Update current automaton reference"""
+        self.current_automaton = automaton
+        self.diagnostics_tab.current_automaton = automaton
         
     def _update_status_bar(self):
         """Update status bar with current simulation info"""

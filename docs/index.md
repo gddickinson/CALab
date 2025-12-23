@@ -27,6 +27,7 @@ Welcome to CALab, a comprehensive platform for exploring cellular automata!
 - [Rule Editor](gui_guide/rule_editor.md) - Creating custom rules
 - [Pattern Editor](gui_guide/pattern_editor.md) - Designing patterns
 - [Diagnostics Tab](gui_guide/diagnostics.md) - Analysis tools
+- [Sonification Tab](gui_guide/sonification_tab.md) - Turn patterns into sound 🎵
 
 ### Tutorials
 - [Creating New Rules](tutorials/creating_rules.md) - Build custom automata

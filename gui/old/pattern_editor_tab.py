@@ -100,9 +100,8 @@ class PatternEditorTab(QWidget):
     Pattern editor for creating initial configurations
     """
     
-    def __init__(self, main_window=None):
+    def __init__(self):
         super().__init__()
-        self.main_window = main_window
         self.patterns = {}
         self._setup_ui()
         
@@ -180,14 +179,6 @@ class PatternEditorTab(QWidget):
         """Create tools group"""
         group = QGroupBox("Tools")
         layout = QVBoxLayout()
-        
-        # Test in simulation (if integrated)
-        if self.main_window:
-            test_btn = QPushButton("🚀 Test in Simulation")
-            test_btn.setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;")
-            test_btn.clicked.connect(self._test_in_simulation)
-            layout.addWidget(test_btn)
-            layout.addWidget(QLabel("---"))
         
         clear_btn = QPushButton("🗑️ Clear Canvas")
         clear_btn.clicked.connect(self.canvas.clear)
@@ -357,23 +348,3 @@ class PatternEditorTab(QWidget):
                 QMessageBox.information(self, "Success", "Pattern imported")
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Failed to import: {e}")
-    
-    def _test_in_simulation(self):
-        """Test current pattern in simulation tab"""
-        if not self.main_window:
-            return
-        
-        # Check if pattern has any active cells
-        if np.sum(self.canvas.grid > 0) == 0:
-            QMessageBox.warning(
-                self, "Empty Pattern",
-                "The pattern is empty! Draw something first."
-            )
-            return
-        
-        # Switch to simulation tab
-        self.main_window.tab_widget.setCurrentWidget(self.main_window.simulation_tab)
-        
-        # Trigger the use custom pattern function
-        self.main_window.simulation_tab._use_custom_pattern()
-

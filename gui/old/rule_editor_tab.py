@@ -15,9 +15,8 @@ class RuleEditorTab(QWidget):
     Rule editor for creating custom transition rules
     """
     
-    def __init__(self, main_window=None):
+    def __init__(self):
         super().__init__()
-        self.main_window = main_window
         self.rules = {}
         self._setup_ui()
         
