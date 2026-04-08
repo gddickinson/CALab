@@ -76,7 +76,7 @@ class PluginShowcase:
                 try:
                     idx = int(choice) - 1
                     pattern_name = list(patterns.keys())[idx]
-                except:
+                except (ValueError, IndexError):
                     pattern_name = list(patterns.keys())[0]
             else:
                 pattern_name = list(patterns.keys())[0]

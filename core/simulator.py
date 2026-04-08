@@ -153,8 +153,17 @@ class SimulationEngine:
                 self.on_complete_callback()
     
     def set_speed(self, speed_ms: int) -> None:
-        """Set simulation speed in milliseconds per step"""
-        self.speed_ms = max(1, speed_ms)
+        """Set simulation speed in milliseconds per step.
+
+        Args:
+            speed_ms: Speed in milliseconds (clamped to minimum of 1)
+
+        Raises:
+            TypeError: If speed_ms is not a number
+        """
+        if not isinstance(speed_ms, (int, float)):
+            raise TypeError(f"speed_ms must be a number, got {type(speed_ms).__name__}")
+        self.speed_ms = max(1, int(speed_ms))
     
     def get_status(self) -> dict:
         """Get current simulation status"""
@@ -181,22 +190,29 @@ class BatchSimulation:
     def __init__(self):
         self.results = []
         
-    def run_batch(self, automaton_factory: Callable, 
+    def run_batch(self, automaton_factory: Callable,
                   parameter_sets: List[dict],
                   num_steps: int,
                   callback: Optional[Callable] = None) -> List[dict]:
         """
         Run batch simulations
-        
+
         Args:
             automaton_factory: Function that creates automaton with given parameters
             parameter_sets: List of parameter dictionaries
             num_steps: Number of steps to run each simulation
             callback: Optional callback for progress updates
-            
+
         Returns:
             List of result dictionaries
+
+        Raises:
+            ValueError: If num_steps is negative or parameter_sets is empty
         """
+        if num_steps < 0:
+            raise ValueError(f"num_steps must be non-negative, got {num_steps}")
+        if not parameter_sets:
+            raise ValueError("parameter_sets must not be empty")
         self.results = []
         
         for i, params in enumerate(parameter_sets):
