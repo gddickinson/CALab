@@ -351,3 +351,7 @@ For bugs, feature requests, or questions, please export a diagnostic report and 
 
 ---
 
+
+
+---
+*Built with AI assistance from [Claude (Anthropic)](https://claude.com/).*
