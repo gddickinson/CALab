@@ -92,3 +92,11 @@ def test_totalistic_rules_survive_save_and_load(tmp_path):
     assert loaded.totalistic_rules == eng.totalistic_rules      # keys used to load as tuples of characters
     assert loaded.apply_totalistic_rule(0, 3) == 1
 
+
+# --- HighLife random region -------------------------------------------------------------------------------------------
+def test_highlife_random_region():
+    from plugins.life_variants import HighLife
+    np.random.seed(0)
+    h = HighLife(20, 20)
+    h.initialize_pattern('random', x=2, y=3, size_x=5, size_y=4, density=1.0)   # used to raise NameError
+    assert h.grid.sum() == 20 and h.grid[3:7, 2:7].all()

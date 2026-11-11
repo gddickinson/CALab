@@ -233,13 +233,15 @@ class HighLife(CellularAutomaton):
                 if cy + dy < self.height and cx + dx < self.width:
                     self.grid[cy + dy, cx + dx] = replicator[dy][dx]
     
-    def _create_random(self, density: float = 0.3, x: int = None, y: int = None):
-        """Random pattern"""
+    def _create_random(self, density: float = 0.3, x: int = None, y: int = None,
+                       size_x: int = None, size_y: int = None):
+        """Random pattern (whole grid, or a size_x by size_y region at x, y)"""
         if x is None or y is None:
             self.grid = (np.random.random((self.height, self.width)) < density).astype(np.int32)
         else:
-            size_x = kwargs.get('size_x', self.width // 2)
-            size_y = kwargs.get('size_y', self.height // 2)
+            # size_x/size_y used to be read from an undefined `kwargs` (NameError whenever x and y were given)
+            size_x = size_x if size_x is not None else self.width // 2
+            size_y = size_y if size_y is not None else self.height // 2
             for dy in range(size_y):
                 for dx in range(size_x):
                     if y + dy < self.height and x + dx < self.width:
