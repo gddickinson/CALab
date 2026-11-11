@@ -17,7 +17,7 @@ CALab includes **13 cellular automata models** spanning historical classics to m
 | Rule 110 | 2 | Elementary | 4 | ⭐⭐⭐ Moderate |
 | HighLife | 2 | Life-like | 3 | ⭐⭐ Easy |
 | Day and Night | 2 | Life-like | 3 | ⭐⭐⭐ Moderate |
-| Cyclic CA | 14 | Self-organizing | 4 | ⭐⭐⭐ Moderate |
+| Cyclic CA | 3 (2-20) | Self-organizing | 4 | ⭐⭐⭐ Moderate |
 | Langton's Loop | 8 | Self-replicating | 2 | ⭐⭐⭐⭐ Advanced |
 | Von Neumann (Simple) | 29 | Self-replicating | 3 | ⭐⭐⭐⭐ Advanced |
 | Von Neumann (Full) | 29 | Self-replicating | 4 | ⭐⭐⭐⭐⭐ Expert |
@@ -91,7 +91,7 @@ CALab includes **13 cellular automata models** spanning historical classics to m
 ### Self-Organizing
 
 **Cyclic CA** (`cyclic_ca`)
-- **States**: 14 (configurable)
+- **States**: 3 by default (Griffeath's "313" rule: threshold 3, Moore neighbourhood); configurable up to 20
 - **Features**: Rainbow spirals
 - **Best for**: Visual beauty
 - **Highlight**: Self-organizing spirals!

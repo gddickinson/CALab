@@ -1,9 +1,10 @@
 // Home page: hero, live counts from /api/info, one card per registered automaton, and how the site is built.
 import { route, api, app, esc, list, tags, isStatic } from './core.js';
 import { isPorted } from './ca_engine.js';
+import { stateColors } from './lab_view.js';
 
 export const swatches = (colors, n) =>
-  `<div class="swatches" aria-hidden="true">${list(colors.slice(0, n), c => `<i style="background:${esc(c)}"></i>`)}</div>`;
+  `<div class="swatches" aria-hidden="true">${list(stateColors(colors, n), c => `<i style="background:${esc(c)}"></i>`)}</div>`;
 
 route('home', async () => {
   const [info, rules] = await Promise.all([api('/info'), api('/rules')]);

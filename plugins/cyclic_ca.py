@@ -13,6 +13,11 @@ import numpy as np
 from core.automaton_base import (CellularAutomaton, PluginInterface, 
                                 AutomatonMetadata, NeighborhoodType)
 
+# Defaults: Griffeath's "313" rule (range 1, threshold 3, 3 colours, Moore neighbourhood), which organises a random
+# start into persistent spiral turbulence. (The previous 14 states / threshold 3 froze within a few dozen steps.)
+DEFAULT_NUM_STATES = 3
+DEFAULT_THRESHOLD = 3
+
 
 class CyclicCA(CellularAutomaton):
     """
@@ -26,7 +31,8 @@ class CyclicCA(CellularAutomaton):
     Creates beautiful self-organizing spiral patterns.
     """
     
-    def __init__(self, width: int, height: int, num_states: int = 14, threshold: int = 3):
+    def __init__(self, width: int, height: int, num_states: int = DEFAULT_NUM_STATES,
+                 threshold: int = DEFAULT_THRESHOLD):
         metadata = AutomatonMetadata(
             name=f"Cyclic CA ({num_states} states)",
             description=f"Self-organizing spirals (threshold={threshold})",
@@ -106,15 +112,17 @@ class CyclicCA(CellularAutomaton):
     
     def _create_domains(self, x: int = None, y: int = None):
         """Create distinct domains"""
-        # Divide grid into regions with different states
-        region_size = self.width // 4
-        
+        # Divide grid into a 4x4 block of regions (ceil division per axis, so the blocks cover every cell; using
+        # width // 4 for both axes left uncovered state-0 strips at the right/bottom and on non-square grids)
+        region_w = -(-self.width // 4)
+        region_h = -(-self.height // 4)
+
         for i in range(4):
             for j in range(4):
-                y_start = i * region_size
-                y_end = min((i + 1) * region_size, self.height)
-                x_start = j * region_size
-                x_end = min((j + 1) * region_size, self.width)
+                y_start = i * region_h
+                y_end = min((i + 1) * region_h, self.height)
+                x_start = j * region_w
+                x_end = min((j + 1) * region_w, self.width)
                 
                 state = ((i + j) * self.num_states_ca // 4) % self.num_states_ca
                 self.grid[y_start:y_end, x_start:x_end] = state
@@ -136,7 +144,7 @@ class CyclicCAPlugin(PluginInterface):
             description="Self-organizing spiral patterns",
             author="David Griffeath",
             version="1.0",
-            num_states=14,
+            num_states=DEFAULT_NUM_STATES,
             neighborhood_type=NeighborhoodType.MOORE,
             is_totalistic=False,
             supports_mutation=False
@@ -144,8 +152,8 @@ class CyclicCAPlugin(PluginInterface):
     
     @staticmethod
     def create_automaton(width: int, height: int, **kwargs):
-        num_states = kwargs.get('num_states', 14)
-        threshold = kwargs.get('threshold', 3)
+        num_states = kwargs.get('num_states', DEFAULT_NUM_STATES)
+        threshold = kwargs.get('threshold', DEFAULT_THRESHOLD)
         automaton = CyclicCA(width, height, num_states, threshold)
         pattern = kwargs.get('pattern', 'random')
         automaton.initialize_pattern(pattern, **{k: v for k, v in kwargs.items() 
@@ -158,22 +166,22 @@ class CyclicCAPlugin(PluginInterface):
             'random': {
                 'description': 'Random initialization (forms spirals)',
                 'recommended_size': (150, 150),
-                'parameters': {'num_states': 14, 'threshold': 3}
+                'parameters': {'num_states': DEFAULT_NUM_STATES, 'threshold': DEFAULT_THRESHOLD}
             },
             'spiral_seeds': {
                 'description': 'Seeds for spiral formation',
                 'recommended_size': (150, 150),
-                'parameters': {'num_states': 14, 'threshold': 3}
+                'parameters': {'num_states': DEFAULT_NUM_STATES, 'threshold': DEFAULT_THRESHOLD}
             },
             'domains': {
                 'description': 'Distinct color domains',
                 'recommended_size': (150, 150),
-                'parameters': {'num_states': 16, 'threshold': 2}
+                'parameters': {'num_states': 4, 'threshold': 3}   # 16/2 never moved: neighbours differed by 4 states
             },
             'gradient': {
                 'description': 'Gradient pattern',
                 'recommended_size': (150, 150),
-                'parameters': {'num_states': 12, 'threshold': 4}
+                'parameters': {'num_states': 12, 'threshold': 3}  # T=4 froze: a band edge gives only 3 neighbours
             }
         }
     

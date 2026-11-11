@@ -1,18 +1,26 @@
-// Subtle animated background: a coarse cyclic cellular automaton (the same JS engine as the lab) drawn behind the
-// page. Static single frame under prefers-reduced-motion; paused while the tab is hidden.
+// Subtle animated background: a coarse cyclic cellular automaton run by the lab's JS engine with the plugin's own
+// default parameters (read from /api/rules, i.e. CyclicCA's DEFAULT_NUM_STATES / DEFAULT_THRESHOLD), drawn behind
+// the page in dimmed site accents. Static single frame under prefers-reduced-motion; paused while the tab is hidden.
 import { makeState, step } from './ca_engine.js';
-import { rng } from './core.js';
+import { api, rng } from './core.js';
 
-const N = 8, CELL = 10;   // N=8, T=2 keeps forming slow spirals from a random start
-const PALETTE = Array.from({ length: N }, (_, i) => {
-  const t = i / N, a = [46, 242, 192], b = [157, 140, 255], c = [255, 165, 61];
-  const mix = (p, q, u) => p.map((v, k) => Math.round(v + (q[k] - v) * u));
-  const rgb = t < 0.5 ? mix(a, b, t * 2) : mix(b, c, (t - 0.5) * 2);
-  return rgb.map(v => Math.round(v * 0.55));
-});
+const CELL = 10, TICK_MS = 200;
+const ACCENTS = [[46, 242, 192], [157, 140, 255], [255, 165, 61]];
 
-export function background(canvas) {
+function palette(n) {
+  return Array.from({ length: n }, (_, i) => {
+    const t = (i / n) * ACCENTS.length, k = Math.floor(t), u = t - k;
+    const a = ACCENTS[k % ACCENTS.length], b = ACCENTS[(k + 1) % ACCENTS.length];
+    return a.map((v, j) => Math.round((v + (b[j] - v) * u) * 0.55));
+  });
+}
+
+export async function background(canvas) {
   if (!canvas) return;
+  const rules = await api('/rules');
+  const cyc = rules.find(r => r.key === 'cyclic_ca');
+  const params = Object.fromEntries(cyc.params.map(p => [p.name, p.default]));
+  const N = params.num_states, colors = palette(N);
   const ctx = canvas.getContext('2d');
   let s = null, img = null;
   const reset = () => {
@@ -25,17 +33,22 @@ export function background(canvas) {
   const draw = () => {
     const d = img.data;
     for (let i = 0; i < s.cells.length; i++) {
-      const [r, g, b] = PALETTE[s.cells[i]];
+      const [r, g, b] = colors[s.cells[i]];
       d[i * 4] = r; d[i * 4 + 1] = g; d[i * 4 + 2] = b; d[i * 4 + 3] = 255;
     }
     ctx.putImageData(img, 0, 0);
   };
-  reset(); draw();
+  reset();
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    for (let i = 0; i < 60; i++) step('cyclic_ca', s, params);   // a settled frame, not raw noise
+    draw();
+    return;
+  }
+  draw();
   addEventListener('resize', () => { reset(); draw(); });
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   setInterval(() => {
     if (document.hidden) return;
-    step('cyclic_ca', s, { num_states: N, threshold: 2 });
+    step('cyclic_ca', s, params);
     draw();
-  }, 140);
+  }, TICK_MS);
 }

@@ -10,5 +10,5 @@ route('notfound', () => { app().innerHTML = '<h1>Not found</h1><p><a href="#/">B
 $('#mode').textContent = isStatic()
   ? 'static site: every automaton runs in your browser'
   : 'local app: browser engine + Python engine at /api';
-background($('#bg'));
+background($("#bg")).catch(e => console.warn("background:", e));
 start();

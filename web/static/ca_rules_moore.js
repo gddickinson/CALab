@@ -81,7 +81,7 @@ const wireworld = {
 // Cyclic CA: advance to (c + 1) % N when at least T neighbours are already in that state.
 const cyclic = {
   step(src, dst, w, h, p = {}) {
-    const N = p.num_states ?? 14, T = p.threshold ?? 3;
+    const N = p.num_states ?? 3, T = p.threshold ?? 3;   // CyclicCA DEFAULT_NUM_STATES / DEFAULT_THRESHOLD
     each(w, h, (x, y, i) => {
       const next = (src[i] + 1) % N;
       dst[i] = mooreCount(src, w, h, x, y, next) >= T ? next : src[i];

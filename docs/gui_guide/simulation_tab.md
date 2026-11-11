@@ -270,7 +270,7 @@ Each automaton has custom colors:
 - Blue: Dying
 
 **Cyclic CA**:
-- Rainbow: 14 different states
+- Rainbow colours: 3 states by default (configurable up to 20)
 - Creates beautiful spirals
 
 ### Canvas Interaction

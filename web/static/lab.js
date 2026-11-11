@@ -2,7 +2,7 @@
 // and rule parameters, draw on the grid, fill a random soup, resize, and (in the local app) check against Python.
 import { route, api, app, esc, list, go, slider, animate, onLeave, rng } from './core.js';
 import { makeState, step, decode, stats, resize } from './ca_engine.js';
-import { makeView } from './lab_view.js';
+import { makeView, stateColors } from './lab_view.js';
 import { checkPanel } from './lab_check.js';
 
 const SIZES = [50, 80, 100, 150, 200, 250];
@@ -80,14 +80,14 @@ route('lab', async (args, query) => {
   }
 
   function buildPalette() {
-    const n = nStates();
-    view.setColors(rule.colormap);
+    const n = nStates(), cols = stateColors(rule.colormap, n);
+    view.setColors(cols);
     brush = Math.min(Math.max(brush, 1), n - 1);
     $('#palette').innerHTML = list(Array.from({ length: n }, (_, i) => i), i => `<button type="button" role="radio"
-      aria-checked="${i === brush}" class="${i === brush ? 'on' : ''}" data-s="${i}" style="background:${esc(rule.colormap[i] || '#808080')}"
+      aria-checked="${i === brush}" class="${i === brush ? 'on' : ''}" data-s="${i}" style="background:${esc(cols[i])}"
       title="State ${i}" aria-label="State ${i}">${i}</button>`);
     $('#legend').innerHTML = `<span class="mute small">States:</span>` + list(Array.from({ length: n }, (_, i) => i),
-      i => `<span><i style="background:${esc(rule.colormap[i] || '#808080')}"></i>${i}</span>`);
+      i => `<span><i style="background:${esc(cols[i])}"></i>${i}</span>`);
   }
   $('#palette').addEventListener('click', e => {
     const b = e.target.closest('button');

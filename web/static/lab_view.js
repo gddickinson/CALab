@@ -6,6 +6,13 @@ export function hexToRgb(hex) {
   return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16));
 }
 
+// Colour of each state 0..n-1 the way the desktop GUI shows it: ListedColormap(colormap) with vmin=0, vmax=n-1
+// (gui/simulation_tab.py), so a short state range is spread over a longer colour list (e.g. the cyclic CA's 20 hues).
+export function stateColors(colormap, n) {
+  const L = colormap.length;
+  return Array.from({ length: n }, (_, i) => colormap[n > 1 ? Math.min(L - 1, Math.floor(i / (n - 1) * L)) : 0] || '#808080');
+}
+
 export function makeView(stage, { label, onPaint }) {
   const canvas = document.createElement('canvas');
   canvas.setAttribute('role', 'img');
