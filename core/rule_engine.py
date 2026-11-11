@@ -7,6 +7,18 @@ import numpy as np
 from typing import Dict, List, Tuple, Any, Optional, Callable
 import json
 import re
+import ast
+
+
+def _parse_key(key) -> Tuple[int, ...]:
+    """Turn a saved totalistic key back into a tuple.
+
+    save_rules_to_file writes keys as str((state, sum)), e.g. "(0, 3)"; tuple(key) on that string gave a tuple of
+    characters, so loaded rules never matched. Lists/tuples are accepted as they are.
+    """
+    if isinstance(key, str):
+        key = ast.literal_eval(key)
+    return tuple(int(v) for v in key)
 
 
 class RuleParser:
@@ -41,7 +53,7 @@ class RuleParser:
         rules = {}
         
         # Parse B/S notation (for 2-state automata)
-        match = re.match(r'B(\d+)/S(\d+)', rule_string)
+        match = re.match(r'B(\d*)/S(\d*)', rule_string)  # \d* so B2/S (Seeds) or B/S23 parse
         if match:
             birth_str, survive_str = match.groups()
             birth = [int(d) for d in birth_str]
@@ -107,7 +119,7 @@ class RuleEngine:
         elif 'totalistic' in data:
             # Totalistic rules
             self.totalistic_rules = {
-                tuple(key): value
+                _parse_key(key): value
                 for key, value in data['totalistic'].items()
             }
             self.rule_type = "totalistic"

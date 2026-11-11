@@ -72,3 +72,23 @@ def test_default_colormap_uses_plugin_metadata():
 
     assert ThreeState.get_colormap() == ['#000000', '#808080', '#ffffff']   # used to raise AttributeError
 
+
+# --- rule parsing / rule files ---------------------------------------------------------------------------------------
+def test_totalistic_rule_with_empty_survival():
+    from core.rule_engine import RuleParser
+    rules = RuleParser.parse_totalistic_rule('B2/S')        # Seeds; used to return {}
+    assert rules[(0, 2)] == 1 and rules[(1, 2)] == 0 and len(rules) == 18
+    assert RuleParser.parse_totalistic_rule('B3/S23')[(1, 2)] == 1
+
+
+def test_totalistic_rules_survive_save_and_load(tmp_path):
+    from core.rule_engine import RuleEngine, RuleParser
+    eng = RuleEngine()
+    eng.totalistic_rules = RuleParser.parse_totalistic_rule('B3/S23')
+    eng.rule_type = 'totalistic'
+    eng.save_rules_to_file(str(tmp_path / 'life.json'))
+    loaded = RuleEngine()
+    loaded.load_rules_from_file(str(tmp_path / 'life.json'))
+    assert loaded.totalistic_rules == eng.totalistic_rules      # keys used to load as tuples of characters
+    assert loaded.apply_totalistic_rule(0, 3) == 1
+
