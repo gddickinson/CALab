@@ -111,6 +111,8 @@ and `tests/test_web.py` re-runs every fixture through the API so the fixtures ca
 | ![Home page](docs/img/home.png) | ![Lab running Brian's Brain](docs/img/lab_brians_brain.png) |
 | **Lab (WireWorld)** | **Automata catalogue** |
 | ![Lab running WireWorld](docs/img/lab_wireworld.png) | ![Automata catalogue](docs/img/automata.png) |
+| **Lab (cyclic CA, default 3 states / threshold 3)** | **About** |
+| ![Lab running the cyclic CA, forming spirals](docs/img/lab_cyclic_ca.png) | ![About page](docs/img/about.png) |
 
 ## 💡 Usage
 

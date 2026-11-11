@@ -43,6 +43,7 @@ CALab/
   tests/               -- Pytest test suite
     test_plugins.py    -- Tests for all 13 plugins (metadata, creation, simulation, patterns, colormaps)
     test_simulator.py  -- Tests for SimulationEngine and BatchSimulation
+    test_regressions.py -- Regression tests for fixed bugs (cyclic CA defaults/presets, colormap, rule parsing, HighLife)
     test_web.py        -- Web API tests, static build, Python-vs-fixture cross-check, runs the node engine test
     fixtures/ca_engine_fixtures.json -- Python reference grids (start + after N steps) for the JS engine
   web/                 -- Web interface (FastAPI + static ES-module front end; also the GitHub Pages site)
