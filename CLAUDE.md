@@ -20,3 +20,10 @@ See [`INTERFACE.md`](./INTERFACE.md) for a navigation map of this repository's m
 When directing Claude Code on this codebase, follow the global rules above, prefer making targeted edits via the `Edit` tool over rewriting whole files, and update `INTERFACE.md` whenever the project structure changes.
 
 Project-specific conventions, build instructions, and lab-specific notes should be added below as the project evolves.
+
+## Web interface (`web/`)
+
+- `python run_web.py` (port 8103); static site via `python scripts/build_static.py`; tests `python -m pytest -q tests/test_web.py`.
+- The browser engine (`web/static/ca_engine.js` + `ca_rules_*.js`) mirrors each plugin's `step()`. If you change a
+  plugin's rules or presets, run `python scripts/make_engine_fixtures.py` and update the JS port until
+  `node web/static/ca_engine.test.mjs` passes again.
