@@ -51,3 +51,24 @@ def test_cyclic_domains_cover_whole_grid(w, h):
     a.initialize_pattern('domains')
     # bottom-right block is (i, j) = (3, 3) -> state (6 * 4 // 4) % 4 == 2; no stray state-0 strips
     assert a.grid[-1, -1] == 2 and a.grid[-1, 0] == 3 and a.grid[0, -1] == 3
+
+
+# --- PluginInterface default colour map ----------------------------------------------------------------------------
+def test_default_colormap_uses_plugin_metadata():
+    from core.automaton_base import AutomatonMetadata, NeighborhoodType, PluginInterface
+
+    class ThreeState(PluginInterface):
+        @staticmethod
+        def get_metadata():
+            return AutomatonMetadata("t", "d", "a", "1", 3, NeighborhoodType.MOORE)
+
+        @staticmethod
+        def create_automaton(width, height, **kwargs):
+            return None
+
+        @staticmethod
+        def get_default_patterns():
+            return {}
+
+    assert ThreeState.get_colormap() == ['#000000', '#808080', '#ffffff']   # used to raise AttributeError
+

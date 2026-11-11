@@ -281,13 +281,13 @@ class PluginInterface(ABC):
         """Return dictionary of default patterns"""
         pass
     
-    @staticmethod
-    def get_colormap() -> List[str]:
-        """Return color scheme for states (default: grayscale)"""
-        num_states = PluginInterface.get_metadata().num_states
-        from matplotlib import cm
-        import matplotlib.pyplot as plt
-        cmap = plt.cm.viridis
-        colors = [cmap(i / max(1, num_states - 1)) for i in range(num_states)]
-        return ['#%02x%02x%02x' % (int(r*255), int(g*255), int(b*255)) 
-                for r, g, b, _ in colors]
+    @classmethod
+    def get_colormap(cls) -> List[str]:
+        """Return color scheme for states (default: grayscale, black for state 0 to white for the last state).
+
+        A classmethod so the default reads the *plugin's* metadata; it used to call
+        PluginInterface.get_metadata(), the abstract stub returning None, and raised AttributeError.
+        """
+        num_states = cls.get_metadata().num_states
+        levels = [round(255 * i / max(1, num_states - 1)) for i in range(num_states)]
+        return ['#%02x%02x%02x' % (v, v, v) for v in levels]
